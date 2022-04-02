@@ -5,6 +5,7 @@ from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 import numpy as np
 from sklearn.metrics import accuracy_score
+from sklearn import cross_validation, svm, preprocessing, metrics
 def step1():
     df = pd.read_csv('heart.csv')
     n = len(df) + 1
@@ -875,7 +876,7 @@ def step7():
     dft = pd.DataFrame(df1,columns=['ID','target'])
     dft.to_csv('target.csv' , index = 0 , header = 1)
     '''SVM與SVM,Random,RR的預測'''
-    '''原始A的SVM-SVM'''
+    '''原始A的SVM-SVM,Random,NN'''
     df6atr_SVM_original = pd.read_csv('step6A_training_SVM_original.csv')
     df6atrt_SVM_original = pd.merge(df6atr_SVM_original,dft)
     df7atr_SVM_original = df6atrt_SVM_original.iloc[:,1:len(df6atrt_SVM_original.columns)-1].values.tolist()
@@ -890,14 +891,42 @@ def step7():
     SVM_model.fit(X,Y)
     y_pred_SVM = SVM_model.predict(df7ate_SVM_original)
     
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(df7ate_SVM_original)
+    
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(df7ate_SVM_original)
+    
     X = np.array(y_pred_SVM).reshape(-1,1)
     Y = np.array(df7atet_SVM_original)
     SVM_model = SVC()
     SVM_model.fit(X,Y)
     y_pred_SVM = SVM_model.predict(X)
     print('原A-SVM_SVM精準度:'+str(accuracy_score(Y, y_pred_SVM)))
-    Aoriginal = str(accuracy_score(Y, y_pred_SVM))
-    '''處理過A的SVM-SVM'''
+    Aoriginal_SVM_SVM = str(accuracy_score(Y, y_pred_SVM))
+    
+    X = np.array(y_pred_Random).reshape(-1,1)
+    Y = np.array(df7atet_SVM_original)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(X)
+    print(y_pred_Random)
+    fpr, tpr, thresholds = metrics.roc_curve(Y,y_pred_Random)
+    auc = metrics.auc(fpr, tpr)
+    print('原A-SVM_Random精準度:'+str(auc))
+    Aoriginal_SVM_Random = str(auc)
+    
+    
+    X = np.array(y_pred_NN).reshape(-1,1)
+    Y = np.array(df7atet_SVM_original)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(X)
+    print('原A-SVM_NN精準度:'+str(accuracy_score(Y, y_pred_NN)))
+    Aoriginal_SVM_NN = str(accuracy_score(Y, y_pred_NN))
+    '''處理過A的SVM-SVM,Random,NN'''
     df6atr_SVM = pd.read_csv('step6A_training_SVM.csv')
     df6atrt_SVM = pd.merge(df6atr_SVM,dft)
     df7atr_SVM = df6atrt_SVM.iloc[:,1:len(df6atrt_SVM.columns)-1].values.tolist()
@@ -911,14 +940,44 @@ def step7():
     SVM_model = SVC()
     SVM_model.fit(X,Y)
     y_pred_SVM = SVM_model.predict(df7ate_SVM)
+    
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(df7ate_SVM)
+    
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(df7ate_SVM)
+    
     X = np.array(y_pred_SVM).reshape(-1,1)
     Y = np.array(df7atet_SVM)
     SVM_model = SVC()
     SVM_model.fit(X,Y)
     y_pred_SVM = SVM_model.predict(X)
     print('處理過A-SVM_SVM精準度:'+str(accuracy_score(Y, y_pred_SVM)))
-    A = str(accuracy_score(Y, y_pred_SVM))
-    '''原始B的SVM-SVM'''
+    A_SVM_SVM = str(accuracy_score(Y, y_pred_SVM))
+    
+    X = np.array(y_pred_Random).reshape(-1,1)
+    Y = np.array(df7atet_SVM)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(X)
+    fpr, tpr, thresholds = metrics.roc_curve(Y,y_pred_Random)
+    auc = metrics.auc(fpr, tpr)
+    print('處理過A-SVM_Random精準度:'+str(auc))
+    A_SVM_Random = str(auc)
+    
+    
+    X = np.array(y_pred_NN).reshape(-1,1)
+    Y = np.array(df7atet_SVM)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(X)
+    print('處理過A-SVM_NN精準度:'+str(accuracy_score(Y, y_pred_NN)))
+    A_SVM_NN = str(accuracy_score(Y, y_pred_NN))
+    
+    
+    '''原始B的SVM-SVM,Random,NN'''
     df6btr_SVM_original = pd.read_csv('step6B_training_SVM_original.csv')
     df6btrt_SVM_original = pd.merge(df6btr_SVM_original,dft)
     df7btr_SVM_original = df6btrt_SVM_original.iloc[:,1:len(df6btrt_SVM_original.columns)-1].values.tolist()
@@ -933,14 +992,43 @@ def step7():
     SVM_model = SVC()
     SVM_model.fit(X,Y)
     y_pred_SVM = SVM_model.predict(df7bte_SVM_original)
+    
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(df7bte_SVM_original)
+    
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(df7bte_SVM_original)
+    
     X = np.array(y_pred_SVM).reshape(-1,1)
     Y = np.array(df7btet_SVM_original)
     SVM_model = SVC()
     SVM_model.fit(X,Y)
     y_pred_SVM = SVM_model.predict(X)
     print('原B-SVM_SVM精準度:'+str(accuracy_score(Y, y_pred_SVM))) 
-    Boriginal = str(accuracy_score(Y, y_pred_SVM))
-    '''處理過B的SVM-SVM'''
+    Boriginal_SVM_SVM = str(accuracy_score(Y, y_pred_SVM))
+    
+    X = np.array(y_pred_Random).reshape(-1,1)
+    Y = np.array(df7btet_SVM_original)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(X)
+    fpr, tpr, thresholds = metrics.roc_curve(Y,y_pred_Random)
+    auc = metrics.auc(fpr, tpr)
+    print('原B-SVM_Random精準度:'+str(auc))
+    Boriginal_SVM_Random = str(auc)
+    
+    
+    X = np.array(y_pred_NN).reshape(-1,1)
+    Y = np.array(df7btet_SVM_original)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(X)
+    print('原B-SVM_NN精準度:'+str(accuracy_score(Y, y_pred_NN)))
+    Boriginal_SVM_NN = str(accuracy_score(Y, y_pred_NN))
+    
+    '''處理過B的SVM-SVM,Random,NN'''
     df6btr_SVM = pd.read_csv('step6B_training_SVM.csv')
     df6btrt_SVM = pd.merge(df6btr_SVM,dft)
     df7btr_SVM = df6btrt_SVM.iloc[:,1:len(df6btrt_SVM.columns)-1].values.tolist()
@@ -954,19 +1042,524 @@ def step7():
     SVM_model = SVC()
     SVM_model.fit(X,Y)
     y_pred_SVM = SVM_model.predict(df7bte_SVM)
+    
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(df7bte_SVM)
+    
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(df7bte_SVM)
+    
     X = np.array(y_pred_SVM).reshape(-1,1)
     Y = np.array(df7btet_SVM)
     SVM_model = SVC()
     SVM_model.fit(X,Y)
     y_pred_SVM = SVM_model.predict(X)
     print('處理過B-SVM_SVM精準度:'+str(accuracy_score(Y, y_pred_SVM)))
-    B = str(accuracy_score(Y, y_pred_SVM))
-    finish.loc[times] = [Aoriginal,A,Boriginal,B]
+    B_SVM_SVM = str(accuracy_score(Y, y_pred_SVM))
+    
+    X = np.array(y_pred_Random).reshape(-1,1)
+    Y = np.array(df7btet_SVM)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(X)
+    fpr, tpr, thresholds = metrics.roc_curve(Y,y_pred_Random)
+    auc = metrics.auc(fpr, tpr)
+    print('處理過B-SVM_Random精準度:'+str(auc))
+    B_SVM_Random = str(auc)
+    
+    
+    X = np.array(y_pred_NN).reshape(-1,1)
+    Y = np.array(df7btet_SVM)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(X)
+    print('處理過B-SVM_NN精準度:'+str(accuracy_score(Y, y_pred_NN)))
+    B_SVM_NN = str(accuracy_score(Y, y_pred_NN))
+    
+    '''原始A的Random-SVM,Random,NN'''
+    df6atr_Random_original = pd.read_csv('step6A_training_Random_original.csv')
+    df6atrt_Random_original = pd.merge(df6atr_Random_original,dft)
+    df7atr_Random_original = df6atrt_Random_original.iloc[:,1:len(df6atrt_Random_original.columns)-1].values.tolist()
+    df7atrt_Random_original = df6atrt_Random_original.iloc[:,len(df6atrt_Random_original.columns)-1].values.tolist()
+    df6ate_Random_original = pd.read_csv('step6A_testing_Random_original.csv')
+    df6atet_Random_original = pd.merge(df6ate_Random_original,dft)
+    df7ate_Random_original = df6atet_Random_original.iloc[:,1:len(df6atet_Random_original.columns)-1].values.tolist()
+    df7atet_Random_original = df6atet_Random_original.iloc[:,len(df6atet_Random_original.columns)-1].values.tolist()
+    X = df7atr_Random_original
+    Y = df7atrt_Random_original
+    SVM_model = SVC()
+    SVM_model.fit(X,Y)
+    y_pred_SVM = SVM_model.predict(df7ate_Random_original)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(df7ate_Random_original)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(df7ate_Random_original)
+    
+    X = np.array(y_pred_SVM).reshape(-1,1)
+    Y = np.array(df7atet_Random_original)
+    SVM_model = SVC()
+    SVM_model.fit(X,Y)
+    y_pred_SVM = SVM_model.predict(X)
+    print('原A-Random_SVM精準度:'+str(accuracy_score(Y, y_pred_SVM)))
+    Aoriginal_Random_SVM = str(accuracy_score(Y, y_pred_SVM))
+    
+    X = np.array(y_pred_Random).reshape(-1,1)
+    Y = np.array(df7atet_Random_original)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(X)
+    fpr, tpr, thresholds = metrics.roc_curve(Y,y_pred_Random)
+    auc = metrics.auc(fpr, tpr)
+    print('原A-Random_Random精準度:'+str(auc))
+    Aoriginal_Random_Random = str(auc)
+    
+    X = np.array(y_pred_NN).reshape(-1,1)
+    Y = np.array(df7atet_Random_original)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(X)
+    print('原A-Random_NN精準度:'+str(accuracy_score(Y, y_pred_NN)))
+    Aoriginal_Random_NN = str(accuracy_score(Y, y_pred_NN))
+    
+    '''處理過A的Random-SVM,Random,NN'''
+    df6atr_Random = pd.read_csv('step6A_training_Random.csv')
+    df6atrt_Random = pd.merge(df6atr_Random,dft)
+    df7atr_Random = df6atrt_Random.iloc[:,1:len(df6atrt_Random.columns)-1].values.tolist()
+    df7atrt_Random = df6atrt_Random.iloc[:,len(df6atrt_Random.columns)-1].values.tolist()
+    df6ate_Random = pd.read_csv('step6A_testing_Random.csv')
+    df6atet_Random = pd.merge(df6ate_Random,dft)
+    df7ate_Random = df6atet_Random.iloc[:,1:len(df6atet_Random.columns)-1].values.tolist()
+    df7atet_Random = df6atet_Random.iloc[:,len(df6atet_Random.columns)-1].values.tolist()
+    
+    X = df7atr_Random
+    Y = df7atrt_Random
+    SVM_model = SVC()
+    SVM_model.fit(X,Y)
+    y_pred_SVM = SVM_model.predict(df7ate_Random)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(df7ate_Random)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(df7ate_Random)
+    
+    X = np.array(y_pred_SVM).reshape(-1,1)
+    Y = np.array(df7atet_Random)
+    SVM_model = SVC()
+    SVM_model.fit(X,Y)
+    y_pred_SVM = SVM_model.predict(X)
+    print('處理過A-Random_SVM精準度:'+str(accuracy_score(Y, y_pred_SVM)))
+    A_Random_SVM = str(accuracy_score(Y, y_pred_SVM))
+    
+    X = np.array(y_pred_Random).reshape(-1,1)
+    Y = np.array(df7atet_Random)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(X)
+    fpr, tpr, thresholds = metrics.roc_curve(Y,y_pred_Random)
+    auc = metrics.auc(fpr, tpr)
+    print('處理過A-Random_Random精準度:'+str(auc))
+    A_Random_Random = str(auc)
+    
+    X = np.array(y_pred_NN).reshape(-1,1)
+    Y = np.array(df7atet_Random)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(X)
+    print('處理過A-Random_NN精準度:'+str(accuracy_score(Y, y_pred_NN)))
+    A_Random_NN = str(accuracy_score(Y, y_pred_NN))
+    
+    '''原始B的Random-SVM,Random,NN'''
+    
+    df6btr_Random_original = pd.read_csv('step6B_training_Random_original.csv')
+    df6btrt_Random_original = pd.merge(df6btr_Random_original,dft)
+    df7btr_Random_original = df6btrt_Random_original.iloc[:,1:len(df6btrt_Random_original.columns)-1].values.tolist()
+    df7btrt_Random_original = df6btrt_Random_original.iloc[:,len(df6btrt_Random_original.columns)-1].values.tolist()
+    df6bte_Random_original = pd.read_csv('step6A_testing_Random_original.csv')
+    df6btet_Random_original = pd.merge(df6bte_Random_original,dft)
+    df7bte_Random_original = df6btet_Random_original.iloc[:,1:len(df6btet_Random_original.columns)-1].values.tolist()
+    df7btet_Random_original = df6btet_Random_original.iloc[:,len(df6btet_Random_original.columns)-1].values.tolist()
+    
+    X = df7btr_Random_original
+    Y = df7btrt_Random_original
+    SVM_model = SVC()
+    SVM_model.fit(X,Y)
+    y_pred_SVM = SVM_model.predict(df7bte_Random_original)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(df7bte_Random_original)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(df7bte_Random_original)
+    
+    X = np.array(y_pred_SVM).reshape(-1,1)
+    Y = np.array(df7btet_Random_original)
+    SVM_model = SVC()
+    SVM_model.fit(X,Y)
+    y_pred_SVM = SVM_model.predict(X)
+    print('原B-Random_SVM精準度:'+str(accuracy_score(Y, y_pred_SVM)))
+    Boriginal_Random_SVM = str(accuracy_score(Y, y_pred_SVM))
+    
+    X = np.array(y_pred_Random).reshape(-1,1)
+    Y = np.array(df7btet_Random_original)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(X)
+    fpr, tpr, thresholds = metrics.roc_curve(Y,y_pred_Random)
+    auc = metrics.auc(fpr, tpr)
+    print('原B-Random_Random精準度:'+str(auc))
+    Boriginal_Random_Random = str(auc)
+    
+    
+    X = np.array(y_pred_NN).reshape(-1,1)
+    Y = np.array(df7btet_Random_original)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(X)
+    print('原B-Random_NN精準度:'+str(accuracy_score(Y, y_pred_NN)))
+    Boriginal_Random_NN = str(accuracy_score(Y, y_pred_NN))
+    
+    '''處理過B的Random-SVM,Random,NN'''
+    df6btr_Random = pd.read_csv('step6B_training_Random.csv')
+    df6btrt_Random = pd.merge(df6btr_Random,dft)
+    df7btr_Random = df6btrt_Random.iloc[:,1:len(df6btrt_Random.columns)-1].values.tolist()
+    df7btrt_Random = df6btrt_Random.iloc[:,len(df6btrt_Random.columns)-1].values.tolist()
+    df6bte_Random = pd.read_csv('step6B_testing_Random.csv')
+    df6btet_Random = pd.merge(df6bte_Random,dft)
+    df7bte_Random = df6btet_Random.iloc[:,1:len(df6btet_Random.columns)-1].values.tolist()
+    df7btet_Random = df6btet_Random.iloc[:,len(df6btet_Random.columns)-1].values.tolist()
+    
+    X = df7btr_Random
+    Y = df7btrt_Random
+    SVM_model = SVC()
+    SVM_model.fit(X,Y)
+    y_pred_SVM = SVM_model.predict(df7bte_Random)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(df7bte_Random)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(df7bte_Random)
+    
+    X = np.array(y_pred_SVM).reshape(-1,1)
+    Y = np.array(df7btet_Random)
+    SVM_model = SVC()
+    SVM_model.fit(X,Y)
+    y_pred_SVM = SVM_model.predict(X)
+    print('處理過B-Random_SVM精準度:'+str(accuracy_score(Y, y_pred_SVM)))
+    B_Random_SVM = str(accuracy_score(Y, y_pred_SVM))
+    
+    X = np.array(y_pred_Random).reshape(-1,1)
+    Y = np.array(df7btet_Random)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(X)
+    fpr, tpr, thresholds = metrics.roc_curve(Y,y_pred_Random)
+    auc = metrics.auc(fpr, tpr)
+    print('處理過B-Random_Random精準度:'+str(auc))
+    B_Random_Random = str(auc)
+    
+    X = np.array(y_pred_NN).reshape(-1,1)
+    Y = np.array(df7btet_Random)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(X)
+    print('處理過B-Random_NN精準度:'+str(accuracy_score(Y, y_pred_NN)))
+    B_Random_NN = str(accuracy_score(Y, y_pred_NN))
+    
+    '''原始A的NN-SVM,Random,NN'''
+    df6atr_NN_original = pd.read_csv('step6A_training_NN_original.csv')
+    df6atrt_NN_original = pd.merge(df6atr_NN_original,dft)
+    df7atr_NN_original = df6atrt_NN_original.iloc[:,1:len(df6atrt_NN_original.columns)-1].values.tolist()
+    df7atrt_NN_original = df6atrt_NN_original.iloc[:,len(df6atrt_NN_original.columns)-1].values.tolist()
+    df6ate_NN_original = pd.read_csv('step6A_testing_NN_original.csv')
+    df6atet_NN_original = pd.merge(df6ate_NN_original,dft)
+    df7ate_NN_original = df6atet_NN_original.iloc[:,1:len(df6atet_NN_original.columns)-1].values.tolist()
+    df7atet_NN_original = df6atet_NN_original.iloc[:,len(df6atet_NN_original.columns)-1].values.tolist()
+    
+    X = df7atr_NN_original
+    Y = df7atrt_NN_original
+    SVM_model = SVC()
+    SVM_model.fit(X,Y)
+    y_pred_SVM = SVM_model.predict(df7ate_NN_original)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(df7ate_NN_original)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(df7ate_NN_original)
+    
+    X = np.array(y_pred_SVM).reshape(-1,1)
+    Y = np.array(df7atet_NN_original)
+    SVM_model = SVC()
+    SVM_model.fit(X,Y)
+    y_pred_SVM = SVM_model.predict(X)
+    print('原A-NN_SVM精準度:'+str(accuracy_score(Y, y_pred_SVM)))
+    Aoriginal_NN_SVM = str(accuracy_score(Y, y_pred_SVM))
+    
+    X = np.array(y_pred_Random).reshape(-1,1)
+    Y = np.array(df7atet_NN_original)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(X)
+    fpr, tpr, thresholds = metrics.roc_curve(Y,y_pred_Random)
+    auc = metrics.auc(fpr, tpr)
+    print('原A-NN_Random精準度:'+str(auc))
+    Aoriginal_NN_Random = str(auc)
+    
+    X = np.array(y_pred_NN).reshape(-1,1)
+    Y = np.array(df7atet_NN_original)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(X)
+    print('原A-NN_NN精準度:'+str(accuracy_score(Y, y_pred_NN)))
+    Aoriginal_NN_NN = str(accuracy_score(Y, y_pred_NN))
+    
+    '''處理過A的NN-SVM,Random,NN'''
+    
+    df6atr_NN = pd.read_csv('step6A_training_NN.csv')
+    df6atrt_NN = pd.merge(df6atr_NN,dft)
+    df7atr_NN = df6atrt_NN.iloc[:,1:len(df6atrt_NN.columns)-1].values.tolist()
+    df7atrt_NN = df6atrt_NN.iloc[:,len(df6atrt_NN.columns)-1].values.tolist()
+    df6ate_NN = pd.read_csv('step6A_testing_NN.csv')
+    df6atet_NN = pd.merge(df6ate_NN,dft)
+    df7ate_NN = df6atet_NN.iloc[:,1:len(df6atet_NN.columns)-1].values.tolist()
+    df7atet_NN = df6atet_NN.iloc[:,len(df6atet_NN.columns)-1].values.tolist()
+    X = df7atr_NN
+    Y = df7atrt_NN
+    SVM_model = SVC()
+    SVM_model.fit(X,Y)
+    y_pred_SVM = SVM_model.predict(df7ate_NN)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(df7ate_NN)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(df7ate_NN)
+    
+    X = np.array(y_pred_SVM).reshape(-1,1)
+    Y = np.array(df7atet_NN)
+    SVM_model = SVC()
+    SVM_model.fit(X,Y)
+    y_pred_SVM = SVM_model.predict(X)
+    print('處理過A-NN_SVM精準度:'+str(accuracy_score(Y, y_pred_SVM)))
+    A_NN_SVM = str(accuracy_score(Y, y_pred_SVM))
+    
+    X = np.array(y_pred_Random).reshape(-1,1)
+    Y = np.array(df7atet_NN)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(X)
+    fpr, tpr, thresholds = metrics.roc_curve(Y,y_pred_Random)
+    auc = metrics.auc(fpr, tpr)
+    print('處理過A-NN_Random精準度:'+str(auc))
+    A_NN_Random = str(auc)
+    
+    
+    X = np.array(y_pred_NN).reshape(-1,1)
+    Y = np.array(df7atet_NN)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(X)
+    print('處理過A-NN_NN精準度:'+str(accuracy_score(Y, y_pred_NN)))
+    A_NN_NN = str(accuracy_score(Y, y_pred_NN))
+
+    '''原始B的NN-SVM,Random,NN'''
+    df6btr_NN_original = pd.read_csv('step6B_training_NN_original.csv')
+    df6btrt_NN_original = pd.merge(df6btr_NN_original,dft)
+    df7btr_NN_original = df6btrt_NN_original.iloc[:,1:len(df6btrt_NN_original.columns)-1].values.tolist()
+    df7btrt_NN_original = df6btrt_NN_original.iloc[:,len(df6btrt_NN_original.columns)-1].values.tolist()
+    df6bte_NN_original = pd.read_csv('step6A_testing_NN_original.csv')
+    df6btet_NN_original = pd.merge(df6bte_NN_original,dft)
+    df7bte_NN_original = df6btet_NN_original.iloc[:,1:len(df6btet_NN_original.columns)-1].values.tolist()
+    df7btet_NN_original = df6btet_NN_original.iloc[:,len(df6btet_NN_original.columns)-1].values.tolist()
+    
+    X = df7btr_NN_original
+    Y = df7btrt_NN_original
+    SVM_model = SVC()
+    SVM_model.fit(X,Y)
+    y_pred_SVM = SVM_model.predict(df7bte_NN_original)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(df7bte_NN_original)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(df7bte_NN_original)
+    
+    X = np.array(y_pred_SVM).reshape(-1,1)
+    Y = np.array(df7btet_NN_original)
+    SVM_model = SVC()
+    SVM_model.fit(X,Y)
+    y_pred_SVM = SVM_model.predict(X)
+    print('原B-NN_SVM精準度:'+str(accuracy_score(Y, y_pred_SVM)))
+    Boriginal_NN_SVM = str(accuracy_score(Y, y_pred_SVM))
+    
+    X = np.array(y_pred_Random).reshape(-1,1)
+    Y = np.array(df7btet_NN_original)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(X)
+    fpr, tpr, thresholds = metrics.roc_curve(Y,y_pred_Random)
+    auc = metrics.auc(fpr, tpr)
+    print('原B-NN_Random精準度:'+str(auc))
+    Boriginal_NN_Random = str(auc)
+    
+    X = np.array(y_pred_NN).reshape(-1,1)
+    Y = np.array(df7btet_NN_original)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(X)
+    print('原B-NN_NN精準度:'+str(accuracy_score(Y, y_pred_NN)))
+    Boriginal_NN_NN = str(accuracy_score(Y, y_pred_NN))
+    
+    '''處理過B的SVM-SVM,Random,NN'''
+    
+    df6btr_NN = pd.read_csv('step6B_training_NN.csv')
+    df6btrt_NN = pd.merge(df6btr_NN,dft)
+    df7btr_NN = df6btrt_NN.iloc[:,1:len(df6btrt_NN.columns)-1].values.tolist()
+    df7btrt_NN = df6btrt_NN.iloc[:,len(df6btrt_NN.columns)-1].values.tolist()
+    df6bte_NN = pd.read_csv('step6B_testing_NN.csv')
+    df6btet_NN = pd.merge(df6bte_NN,dft)
+    df7bte_NN = df6btet_NN.iloc[:,1:len(df6btet_NN.columns)-1].values.tolist()
+    df7btet_NN = df6btet_NN.iloc[:,len(df6btet_NN.columns)-1].values.tolist()
+    
+    X = df7btr_NN
+    Y = df7btrt_NN
+    SVM_model = SVC()
+    SVM_model.fit(X,Y)
+    y_pred_SVM = SVM_model.predict(df7bte_NN)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(df7bte_NN)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(df7bte_NN)
+    
+    X = np.array(y_pred_SVM).reshape(-1,1)
+    Y = np.array(df7btet_NN)
+    SVM_model = SVC()
+    SVM_model.fit(X,Y)
+    y_pred_SVM = SVM_model.predict(X)
+    print('處理過B-NN_SVM精準度:'+str(accuracy_score(Y, y_pred_SVM)))
+    B_NN_SVM = str(accuracy_score(Y, y_pred_SVM))
+    
+    X = np.array(y_pred_Random).reshape(-1,1)
+    Y = np.array(df7btet_NN)
+    rf_model = ensemble.RandomForestRegressor()
+    rf_model.fit(X,Y)
+    y_pred_Random = rf_model.predict(X)
+    fpr, tpr, thresholds = metrics.roc_curve(Y,y_pred_Random)
+    auc = metrics.auc(fpr, tpr)
+    print('處理過B-NN_Random精準度:'+str(auc))
+    B_NN_Random = str(auc)
+    
+    X = np.array(y_pred_NN).reshape(-1,1)
+    Y = np.array(df7btet_NN)
+    NN_model = MLPClassifier()
+    NN_model.fit(X,Y)
+    y_pred_NN = NN_model.predict(X)
+    print('處理過B-NN_NN精準度:'+str(accuracy_score(Y, y_pred_NN)))
+    B_NN_NN = str(accuracy_score(Y, y_pred_NN))
+    
+    finish_SVM_SVM.loc[times] = [Aoriginal_SVM_SVM,A_SVM_SVM,Boriginal_SVM_SVM,B_SVM_SVM]
+    finish_SVM_Random.loc[times] = [Aoriginal_SVM_Random,A_SVM_Random,Boriginal_SVM_Random,B_SVM_Random]
+    finish_SVM_NN.loc[times] = [Aoriginal_SVM_NN,A_SVM_NN,Boriginal_SVM_NN,B_SVM_NN]
+    finish_Random_SVM.loc[times] = [Aoriginal_Random_SVM,A_Random_SVM,Boriginal_Random_SVM,B_Random_SVM]
+    finish_Random_Random.loc[times] = [Aoriginal_Random_Random,A_Random_Random,Boriginal_Random_Random,B_Random_Random]
+    finish_Random_NN.loc[times] = [Aoriginal_Random_NN,A_Random_NN,Boriginal_Random_NN,B_Random_NN]
+    finish_NN_SVM.loc[times] = [Aoriginal_NN_SVM,A_NN_SVM,Boriginal_NN_SVM,B_NN_SVM]
+    finish_NN_Random.loc[times] = [Aoriginal_NN_Random,A_NN_Random,Boriginal_NN_Random,B_NN_Random]
+    finish_NN_NN.loc[times] = [Aoriginal_NN_NN,A_NN_NN,Boriginal_NN_NN,B_NN_NN]
+    
     print(times)
+def step8():
+    SVM_SVM = pd.read_csv('finish_SVM_SVM.csv')
+    SVM_Random = pd.read_csv('finish_SVM_Random.csv')
+    SVM_NN = pd.read_csv('finish_SVM_NN.csv')
+    Random_SVM = pd.read_csv('finish_Random_SVM.csv')
+    Random_Random = pd.read_csv('finish_Random_Random.csv')
+    Random_NN = pd.read_csv('finish_Random_NN.csv')
+    NN_SVM = pd.read_csv('finish_NN_SVM.csv')
+    NN_Random = pd.read_csv('finish_NN_Random.csv')
+    NN_NN = pd.read_csv('finish_NN_NN.csv')
+    
+    SVM_SVM_A_original = SVM_SVM['A_original'].mean()
+    SVM_SVM_A = SVM_SVM['A'].mean()
+    SVM_SVM_B_original = SVM_SVM['B_original'].mean()
+    SVM_SVM_B = SVM_SVM['B'].mean()
+    
+    SVM_Random_A_original = SVM_Random['A_original'].mean()
+    SVM_Random_A = SVM_Random['A'].mean()
+    SVM_Random_B_original = SVM_Random['B_original'].mean()
+    SVM_Random_B = SVM_Random['B'].mean()
+    
+    SVM_NN_A_original = SVM_NN['A_original'].mean()
+    SVM_NN_A = SVM_NN['A'].mean()
+    SVM_NN_B_original = SVM_NN['B_original'].mean()
+    SVM_NN_B = SVM_NN['B'].mean()
+    
+    Random_SVM_A_original = Random_SVM['A_original'].mean()
+    Random_SVM_A = Random_SVM['A'].mean()
+    Random_SVM_B_original = Random_SVM['B_original'].mean()
+    Random_SVM_B = Random_SVM['B'].mean()
+    
+    Random_Random_A_original = Random_Random['A_original'].mean()
+    Random_Random_A = Random_Random['A'].mean()
+    Random_Random_B_original = Random_Random['B_original'].mean()
+    Random_Random_B = Random_Random['B'].mean()
+    
+    Random_NN_A_original = Random_NN['A_original'].mean()
+    Random_NN_A = Random_NN['A'].mean()
+    Random_NN_B_original = Random_NN['B_original'].mean()
+    Random_NN_B = Random_NN['B'].mean()
+    
+    NN_SVM_A_original = NN_SVM['A_original'].mean()
+    NN_SVM_A = NN_SVM['A'].mean()
+    NN_SVM_B_original = NN_SVM['B_original'].mean()
+    NN_SVM_B = NN_SVM['B'].mean()
+    
+    NN_Random_A_original = NN_Random['A_original'].mean()
+    NN_Random_A = NN_Random['A'].mean()
+    NN_Random_B_original = NN_Random['B_original'].mean()
+    NN_Random_B = NN_Random['B'].mean()
+    
+    NN_NN_A_original = NN_NN['A_original'].mean()
+    NN_NN_A = NN_NN['A'].mean()
+    NN_NN_B_original = NN_NN['B_original'].mean()
+    NN_NN_B = NN_NN['B'].mean()
+    
+    
+    
+    finish_average = pd.DataFrame(columns= ['A_original','A','B_original','B'],index = ["SVM-SVM","SVM-Random","SVM_NN","Random-SVM","Random-Random","Random-NN","NN-SVM","NN-Random","NN-NN"])
+    finish_average.iloc[0] = [SVM_SVM_A_original,SVM_SVM_A,SVM_SVM_B_original,SVM_SVM_B]
+    finish_average.iloc[1] = [SVM_Random_A_original,SVM_Random_A,SVM_Random_B_original,SVM_Random_B]
+    finish_average.iloc[2] = [SVM_NN_A_original,SVM_NN_A,SVM_NN_B_original,SVM_NN_B]
+    finish_average.iloc[3] = [Random_SVM_A_original,Random_SVM_A,Random_SVM_B_original,Random_SVM_B]
+    finish_average.iloc[4] = [Random_Random_A_original,Random_Random_A,Random_Random_B_original,Random_Random_B]
+    finish_average.iloc[5] = [Random_NN_A_original,Random_NN_A,Random_NN_B_original,Random_NN_B]
+    finish_average.iloc[6] = [NN_SVM_A_original,NN_SVM_A,NN_SVM_B_original,NN_SVM_B]
+    finish_average.iloc[7] = [NN_Random_A_original,NN_Random_A,NN_Random_B_original,NN_Random_B]
+    finish_average.iloc[8] = [NN_NN_A_original,NN_NN_A,NN_NN_B_original,NN_NN_B]
+    
+    print(finish_average)
+    
+    
 step1()   
 number = input('請輸入第一筆資料要多少屬性')
-finish = pd.DataFrame(columns = ['A_original','A','B_original','B'])
-times = 1
+finish_SVM_SVM = pd.DataFrame(columns = ['A_original','A','B_original','B'])
+finish_SVM_Random = pd.DataFrame(columns = ['A_original','A','B_original','B'])
+finish_SVM_NN = pd.DataFrame(columns = ['A_original','A','B_original','B'])
+finish_Random_SVM = pd.DataFrame(columns = ['A_original','A','B_original','B'])
+finish_Random_Random = pd.DataFrame(columns = ['A_original','A','B_original','B'])
+finish_Random_NN = pd.DataFrame(columns = ['A_original','A','B_original','B'])
+finish_NN_SVM = pd.DataFrame(columns = ['A_original','A','B_original','B'])
+finish_NN_Random = pd.DataFrame(columns = ['A_original','A','B_original','B'])
+finish_NN_NN = pd.DataFrame(columns = ['A_original','A','B_original','B'])
+times = 0
 number1 = input('訓練資料要佔幾%')
 listab = list()
 ans = input("請問是否輸入修改資料")
@@ -975,7 +1568,8 @@ if ans == 'yes':
     AttributesB = input("請輸入需要修改的B屬性").split(',')
 segmentation = input('要分成幾等份?')
 k = input("請輸入k值")
-for m in range(1,21):
+run = input("請問需要訓練幾次")
+for m in range(1,int(run)+1):
     step2(number,number1)
     df2atr = pd.read_csv('step2A_training.csv')
     df2btr = pd.read_csv('step2B_training.csv')
@@ -984,7 +1578,16 @@ for m in range(1,21):
     step4()
     step5()
     step6()
-    finish.to_csv('finish.csv', index = 0 , header = 1)
     step7()
+    finish_SVM_SVM.to_csv('finish_SVM_SVM.csv', index = 0 , header = 1)
+    finish_SVM_Random.to_csv('finish_SVM_Random.csv', index = 0 , header = 1)
+    finish_SVM_NN.to_csv('finish_SVM_NN.csv',index = 0 , header = 1)
+    finish_Random_SVM.to_csv('finish_Random_SVM.csv',index = 0 , header = 1)
+    finish_Random_Random.to_csv('finish_Random_Random.csv',index = 0 , header = 1)
+    finish_Random_NN.to_csv('finish_Random_NN.csv',index= 0 , header = 1)
+    finish_NN_SVM.to_csv('finish_NN_SVM.csv',index= 0 , header = 1)
+    finish_NN_Random.to_csv('finish_NN_Random.csv',index= 0 , header = 1)
+    finish_NN_NN.to_csv('finish_NN_NN.csv',index= 0 , header = 1)
+    
     times+=1
-print(finish)
+step8()
